@@ -262,17 +262,13 @@ export const DEFAULT_CONFIG: RouterConfig = {
       supports_tools: true,
       default_variant: '5.2',
       variants: {
+        // GLM-5.1 removed: Zhipu retired it (coding-plan calls auto-switch
+        // to GLM-5.2 upstream), so 5.2 is the only GLM variant.
         '5.2': {
           display_name: 'GLM-5.2 (Coding Plan)',
           model_id: 'glm-5.2',
           max_tokens: 131072,
           context_window: 1000000,
-        },
-        '5.1': {
-          display_name: 'GLM-5.1 (Coding Plan)',
-          model_id: 'glm-5.1',
-          max_tokens: 131072,
-          context_window: 204800,
         },
       },
     },
@@ -292,12 +288,6 @@ export const DEFAULT_CONFIG: RouterConfig = {
           model_id: 'glm-5.2',
           max_tokens: 131072,
           context_window: 1000000,
-        },
-        '5.1': {
-          display_name: 'GLM-5.1 (Global)',
-          model_id: 'glm-5.1',
-          max_tokens: 131072,
-          context_window: 204800,
         },
       },
     },
@@ -550,17 +540,13 @@ export const DEFAULT_CONFIG: RouterConfig = {
     'qwen-plan-3.7': 'qwen-plan-3.7-max',
     'qwen-plan-3.7-max': 'qwen-plan-3.7-max',
     glm: 'glm-plan-5.2',
-    'glm-5': 'glm-plan-5.1',
-    'glm-5.1': 'glm-plan-5.1',
     'glm-5.2': 'glm-plan-5.2',
     zhipu: 'glm-plan-5.2',
     chatglm: 'glm-plan-5.2',
     'glm-plan': 'glm-plan-5.2',
     'glm-plan-5.2': 'glm-plan-5.2',
-    'glm-plan-5.1': 'glm-plan-5.1',
     'glm-global': 'glm-global-5.2',
     'glm-global-5.2': 'glm-global-5.2',
-    'glm-global-5.1': 'glm-global-5.1',
     zai: 'glm-global-5.2',
     'z-ai': 'glm-global-5.2',
     step: 'step-3.7-flash',
@@ -1346,16 +1332,12 @@ providers:
     auth_type: api_key
     default_variant: "5.2"
     variants:
+      # GLM-5.1 removed: Zhipu retired it (coding-plan calls auto-switch to 5.2)
       5.2:
         display_name: "GLM-5.2 (Coding Plan)"
         model_id: glm-5.2
         max_tokens: 131072
         context_window: 1000000
-      5.1:
-        display_name: "GLM-5.1 (Coding Plan)"
-        model_id: glm-5.1
-        max_tokens: 131072
-        context_window: 204800
 
   glm-global:
     display_name: GLM Global
@@ -1371,11 +1353,6 @@ providers:
         model_id: glm-5.2
         max_tokens: 131072
         context_window: 1000000
-      5.1:
-        display_name: "GLM-5.1 (Global)"
-        model_id: glm-5.1
-        max_tokens: 131072
-        context_window: 204800
 
   step:
     display_name: StepFun
@@ -1585,17 +1562,13 @@ aliases:
   qwen-plan-3.7: qwen-plan-3.7-max
   qwen-plan-3.7-max: qwen-plan-3.7-max
   glm: glm-plan-5.2
-  glm-5: glm-plan-5.1
-  glm-5.1: glm-plan-5.1
   glm-5.2: glm-plan-5.2
   zhipu: glm-plan-5.2
   chatglm: glm-plan-5.2
   glm-plan: glm-plan-5.2
   glm-plan-5.2: glm-plan-5.2
-  glm-plan-5.1: glm-plan-5.1
   glm-global: glm-global-5.2
   glm-global-5.2: glm-global-5.2
-  glm-global-5.1: glm-global-5.1
   zai: glm-global-5.2
   z-ai: glm-global-5.2
   step: step-3.7-flash

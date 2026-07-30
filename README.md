@@ -201,9 +201,7 @@ ccmr claude --print --output-format json "你的问题"
 | `qwen-plan-3.8-max` | `qwen-plan`, `qwen-plan-3.8`, `qwen-plan-max`, `qwen3.8`, `qwen3.8-max` | Qwen3.8 Max (Preview) | 千问 Token Plan（订阅） |
 | `qwen-plan-3.7-max` | `qwen-plan-3.7` | Qwen3.7 Max | 千问 Token Plan（订阅） |
 | `glm-plan-5.2` | `glm-plan`, `glm`, `glm-5.2`, `zhipu`, `chatglm` | GLM-5.2 | 智谱 GLM Coding Plan（订阅） |
-| `glm-plan-5.1` | `glm-5`, `glm-5.1` | GLM-5.1 | 智谱 GLM Coding Plan（订阅） |
 | `glm-global-5.2` | `glm-global`, `zai`, `z-ai` | GLM-5.2 | Z.ai（国际） |
-| `glm-global-5.1` | - | GLM-5.1 | Z.ai（国际） |
 | `step-3.7-flash` | `step`, `step-3.7`, `stepfun` | Step 3.7 Flash | 阶跃星辰(按量付费) |
 | `step-plan-3.7-flash` | `step-plan`, `step-plan-3.7`, `stepplan` | Step 3.7 Flash (Step Plan) | 阶跃星辰(订阅) |
 | `mimo-v2.5-pro` | `mimo`, `mimo-pro`, `mimo-token-sgp`, `xiaomi` | MiMo V2.5 Pro | MiMo Token Plan SGP |
@@ -231,7 +229,6 @@ ccmr claude --print --output-format json "你的问题"
 | Qwen3.8 Max Preview (仅 Token Plan) | 1M | 64K |
 | Qwen3.7 Max (按量付费 / Token Plan) | 1M | 64K |
 | GLM-5.2 (Coding Plan / 国际) | 1M | 128K |
-| GLM-5.1 (Coding Plan / 国际) | 200K | 128K |
 | Step 3.7 Flash (按量付费 / Step Plan) | 256K | 384K |
 | MiMo V2.5 Pro | 1M | 128K |
 | MiMo V2.5 | 1M | 128K |
@@ -429,9 +426,7 @@ npx claude-code-model-router claude
 /model deepseek-v4-pro           # DeepSeek V4 Pro
 /model deepseek-v4-flash         # DeepSeek V4 Flash
 /model glm-plan-5.2              # GLM-5.2（智谱 Coding Plan 订阅）
-/model glm-plan-5.1              # GLM-5.1（智谱 Coding Plan 订阅）
 /model glm-global-5.2            # GLM-5.2（国际 Z.ai）
-/model glm-global-5.1            # GLM-5.1（国际 Z.ai）
 /model step-3.7-flash            # Step 3.7 Flash（按量付费）
 /model step-plan-3.7-flash       # Step 3.7 Flash（Step Plan 订阅）
 /model minimax-m3                # MiniMax M3
@@ -528,6 +523,10 @@ Key 只配在某个项目目录的 `.env` 里时，网关是项目级的，换�
 DeepSeek Anthropic 兼容接口会忽略 `metadata` 字段，但某些 Claude Code 会话会携带包含特殊字符的 `metadata.user_id`，导致 DeepSeek 在请求校验阶段返回 400。路由器会在转发 DeepSeek 请求前移除该元数据，不影响上下文、工具调用或模型输出。
 
 ## 更新日志
+
+### v1.13.0
+
+- 移除 **GLM-5.1**（国内 `glm-plan-5.1` 与国际 `glm-global-5.1`，别名 `glm-5` / `glm-5.1` 同步下线）：智谱官方已退役 5.1，Coding Plan 对旧模型的调用会被上游自动切换到 GLM-5.2，继续保留只会误导。GLM 现仅保留 5.2（国内 Coding Plan / 国际 Z.ai）
 
 ### v1.12.0
 

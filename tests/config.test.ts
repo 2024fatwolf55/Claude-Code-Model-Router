@@ -217,23 +217,30 @@ describe('GLM: Coding-Plan-only provider (no domestic pay-go Anthropic channel)'
     expect(model.base_url).toBe('https://open.bigmodel.cn/api/anthropic');
     expect(model.api_key_env).toBe('GLM_PLAN_API_KEY');
     expect(model.auth_type).toBe('api_key');
-    expect(config.models['glm-plan-5.1'].model_id).toBe('glm-5.1');
     expect(manager.resolveModelName('glm-plan')).toBe('glm-plan-5.2');
   });
 
   it('keeps every legacy glm alias working against the renamed provider', () => {
     // The rename must not break /model glm for existing users.
     expect(config.models['glm-5.2']).toBeUndefined();
-    expect(config.models['glm-5.1']).toBeUndefined();
     expect(manager.resolveModelName('glm')).toBe('glm-plan-5.2');
     expect(manager.resolveModelName('zhipu')).toBe('glm-plan-5.2');
     expect(manager.resolveModelName('chatglm')).toBe('glm-plan-5.2');
     expect(manager.resolveModelName('glm-5.2')).toBe('glm-plan-5.2');
-    expect(manager.resolveModelName('glm-5.1')).toBe('glm-plan-5.1');
-    expect(manager.resolveModelName('glm-5')).toBe('glm-plan-5.1');
   });
 
-  it('leaves the Z.ai global provider untouched', () => {
+  it('removes GLM-5.1 everywhere (vendor retired it; 5.2 is the only GLM)', () => {
+    // Zhipu retired GLM-5.1: coding-plan calls to it are auto-switched to
+    // GLM-5.2 upstream, so carrying the variant only misleads. Removed from
+    // both the domestic plan provider and the Z.ai global provider, along
+    // with the glm-5 / glm-5.1 aliases (they pass through unresolved).
+    expect(config.models['glm-plan-5.1']).toBeUndefined();
+    expect(config.models['glm-global-5.1']).toBeUndefined();
+    expect(config.models[manager.resolveModelName('glm-5.1')]).toBeUndefined();
+    expect(config.models[manager.resolveModelName('glm-5')]).toBeUndefined();
+  });
+
+  it('keeps the Z.ai global 5.2 model', () => {
     expect(config.models['glm-global-5.2'].api_key_env).toBe('GLM_GLOBAL_API_KEY');
     expect(manager.resolveModelName('glm-global')).toBe('glm-global-5.2');
   });
