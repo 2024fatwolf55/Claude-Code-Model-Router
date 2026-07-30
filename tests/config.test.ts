@@ -200,6 +200,45 @@ describe('Qwen 3.8: Token-Plan-only, 3.5 removal, pay-go stays on 3.7', () => {
   });
 });
 
+describe('GLM: Coding-Plan-only provider (no domestic pay-go Anthropic channel)', () => {
+  const manager = new ConfigManager(null);
+  const config = manager.getConfig();
+
+  it('exposes the bigmodel Anthropic endpoint as the glm-plan provider', () => {
+    // open.bigmodel.cn/api/anthropic is gated by the GLM Coding Plan
+    // subscription: pay-go keys/token packages get 429 [1309] and the
+    // coding-plan FAQ states resource packages are unusable there. Zhipu has
+    // no pay-as-you-go Anthropic endpoint (only OpenAI /api/paas/v4), so the
+    // provider carries the -plan name and its own key env, like
+    // kimi-plan/qwen-plan.
+    const model = config.models['glm-plan-5.2'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('glm-5.2');
+    expect(model.base_url).toBe('https://open.bigmodel.cn/api/anthropic');
+    expect(model.api_key_env).toBe('GLM_PLAN_API_KEY');
+    expect(model.auth_type).toBe('api_key');
+    expect(config.models['glm-plan-5.1'].model_id).toBe('glm-5.1');
+    expect(manager.resolveModelName('glm-plan')).toBe('glm-plan-5.2');
+  });
+
+  it('keeps every legacy glm alias working against the renamed provider', () => {
+    // The rename must not break /model glm for existing users.
+    expect(config.models['glm-5.2']).toBeUndefined();
+    expect(config.models['glm-5.1']).toBeUndefined();
+    expect(manager.resolveModelName('glm')).toBe('glm-plan-5.2');
+    expect(manager.resolveModelName('zhipu')).toBe('glm-plan-5.2');
+    expect(manager.resolveModelName('chatglm')).toBe('glm-plan-5.2');
+    expect(manager.resolveModelName('glm-5.2')).toBe('glm-plan-5.2');
+    expect(manager.resolveModelName('glm-5.1')).toBe('glm-plan-5.1');
+    expect(manager.resolveModelName('glm-5')).toBe('glm-plan-5.1');
+  });
+
+  it('leaves the Z.ai global provider untouched', () => {
+    expect(config.models['glm-global-5.2'].api_key_env).toBe('GLM_GLOBAL_API_KEY');
+    expect(manager.resolveModelName('glm-global')).toBe('glm-global-5.2');
+  });
+});
+
 describe('ConfigManager: user config merging', () => {
   it('fails closed when an explicit config path does not exist', () => {
     expect(() => new ConfigManager('/definitely-missing/ccmr-models.yaml')).toThrow(

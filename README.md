@@ -200,8 +200,8 @@ ccmr claude --print --output-format json "你的问题"
 | `qwen3.7-max` | `qwen`, `qwen-max`, `qwen3.7`, `tongyi` | Qwen3.7 Max | 阿里云（按量付费） |
 | `qwen-plan-3.8-max` | `qwen-plan`, `qwen-plan-3.8`, `qwen-plan-max`, `qwen3.8`, `qwen3.8-max` | Qwen3.8 Max (Preview) | 千问 Token Plan（订阅） |
 | `qwen-plan-3.7-max` | `qwen-plan-3.7` | Qwen3.7 Max | 千问 Token Plan（订阅） |
-| `glm-5.2` | `glm`, `zhipu`, `chatglm` | GLM-5.2 | 智谱 AI（国内） |
-| `glm-5.1` | `glm-5` | GLM-5.1 | 智谱 AI（国内） |
+| `glm-plan-5.2` | `glm-plan`, `glm`, `glm-5.2`, `zhipu`, `chatglm` | GLM-5.2 | 智谱 GLM Coding Plan（订阅） |
+| `glm-plan-5.1` | `glm-5`, `glm-5.1` | GLM-5.1 | 智谱 GLM Coding Plan（订阅） |
 | `glm-global-5.2` | `glm-global`, `zai`, `z-ai` | GLM-5.2 | Z.ai（国际） |
 | `glm-global-5.1` | - | GLM-5.1 | Z.ai（国际） |
 | `step-3.7-flash` | `step`, `step-3.7`, `stepfun` | Step 3.7 Flash | 阶跃星辰(按量付费) |
@@ -230,8 +230,8 @@ ccmr claude --print --output-format json "你的问题"
 | MiniMax M3 (CN / Global) | 1M | 128K |
 | Qwen3.8 Max Preview (仅 Token Plan) | 1M | 64K |
 | Qwen3.7 Max (按量付费 / Token Plan) | 1M | 64K |
-| GLM-5.2 (国内 / 国际) | 1M | 128K |
-| GLM-5.1 (国内 / 国际) | 200K | 128K |
+| GLM-5.2 (Coding Plan / 国际) | 1M | 128K |
+| GLM-5.1 (Coding Plan / 国际) | 200K | 128K |
 | Step 3.7 Flash (按量付费 / Step Plan) | 256K | 384K |
 | MiMo V2.5 Pro | 1M | 128K |
 | MiMo V2.5 | 1M | 128K |
@@ -246,7 +246,7 @@ Claude Code 内置的 `Web Search` 是 **Anthropic 服务端工具**（`web_sear
 | Moonshot 国内（kimi-cn-k3） | ✅ 支持 | 返回 `server_tool_use` + `web_search_tool_result`，搜到实时结果 |
 | DeepSeek | ✅ 支持 | 同上 |
 | MiniMax CN（minimax-m3） | ✅ 支持 | 同上 |
-| 智谱 GLM（glm-5.2） | ❌ 不支持 | 工具被静默忽略，模型回答"无法联网"，Claude Code 显示 `Did 0 searches` |
+| 智谱 GLM（glm-plan-5.2） | ❌ 不支持 | 工具被静默忽略，模型回答"无法联网"，Claude Code 显示 `Did 0 searches` |
 | Qwen 按量付费（qwen3.7-max） | ❌ 不支持 | 同上 |
 
 其余供应商（Kimi 国际站、GLM Global、Step、MiMo、Doubao Seed、MiniMax Global）未实测，以实际行为为准；供应商随时可能补齐支持。
@@ -272,7 +272,7 @@ MINIMAX_API_KEY=xxx        # MiniMax CN / Token Plan: https://platform.minimaxi.
 MINIMAX_GLOBAL_API_KEY=xxx # MiniMax Global: https://platform.minimax.io/
 QWEN_API_KEY=sk-xxx        # Qwen 按量付费: https://dashscope.console.aliyun.com/
 QWEN_PLAN_API_KEY=sk-sp-xxx # Qwen Token Plan 订阅（专属接入点 token-plan.cn-beijing.maas.aliyuncs.com）: https://platform.qianwenai.com/
-GLM_API_KEY=xxx            # GLM 国内版（智谱）: https://open.bigmodel.cn/
+GLM_PLAN_API_KEY=xxx       # GLM Coding Plan 订阅（智谱国内）: https://bigmodel.cn/claude-code
 GLM_GLOBAL_API_KEY=xxx     # GLM 国际版（Z.ai）: https://z.ai/model-api
 ARK_API_KEY=xxx            # Doubao Seed 火山方舟 按量付费 (/api/compatible): https://console.volcengine.com/ark
 ARK_PLAN_API_KEY=xxx       # Doubao Seed 火山方舟 Agent Plan 订阅 (/api/plan) 专属 Key
@@ -293,6 +293,8 @@ CCMR_REQUIRED_AUTH_TOKEN=  # 非回环监听时必须设置
 `ccmr claude` 与 `ccmr stats` 会自动使用 `CCMR_REQUIRED_AUTH_TOKEN`。如客户端与服务端使用不同环境，可在客户端单独设置 `CCMR_AUTH_TOKEN` 覆盖发送令牌。
 
 MiMo Token Plan 的 Base URL 与购买套餐所在集群绑定。默认 `mimo` 使用 SGP 集群；如果订阅页显示 CN 或 AMS 集群，请分别配置 `MIMO_TOKEN_CN_API_KEY` / `MIMO_TOKEN_AMS_API_KEY`，并使用 `mimo-token-cn` 或 `mimo-token-ams`。`tp-*` Token Plan Key 不能用于按量付费接口，`sk-*` 按量付费 Key 也不能用于 Token Plan 接口。
+
+智谱 GLM 国内**仅支持 Coding Plan 订阅**：`open.bigmodel.cn/api/anthropic` 是智谱国内唯一的 Anthropic 兼容端点，且被 Coding Plan 门控——按量付费 key / tokens 资源包调用会返回 `429 [1309] 套餐已到期/未订阅`，官方 FAQ 明确资源包在该通道不可用、套餐额度耗尽也不会转按量计费。国内按量付费只提供 OpenAI 协议（`/api/paas/v4`），ccmr 作为 Anthropic 协议直通网关暂无法接入，待智谱开通按量 Anthropic 端点后再支持。
 
 ### 配置文件 (models.yaml)
 
@@ -408,7 +410,7 @@ npx claude-code-model-router claude
 /model deepseek   # 切换到 DeepSeek V4 Pro
 /model qwen       # 切换到 Qwen3.7 Max（按量付费）
 /model qwen-plan  # 切换到 Qwen3.8 Max Preview（千问 Token Plan 订阅）
-/model glm        # 切换到 GLM-5.2（国内 智谱）
+/model glm        # 切换到 GLM-5.2（智谱 Coding Plan 订阅）
 /model glm-global # 切换到 GLM-5.2（国际 Z.ai）
 /model seed       # 切换到 Doubao Seed 2.1 Pro（火山方舟 按量付费）
 /model seed-plan  # 切换到 Doubao Seed 2.1 Pro（火山方舟 Agent Plan 订阅）
@@ -426,8 +428,8 @@ npx claude-code-model-router claude
 # 使用版本别名（明确指定版本）
 /model deepseek-v4-pro           # DeepSeek V4 Pro
 /model deepseek-v4-flash         # DeepSeek V4 Flash
-/model glm-5.2                   # GLM-5.2（国内 智谱）
-/model glm-5.1                   # GLM-5.1（国内 智谱）
+/model glm-plan-5.2              # GLM-5.2（智谱 Coding Plan 订阅）
+/model glm-plan-5.1              # GLM-5.1（智谱 Coding Plan 订阅）
 /model glm-global-5.2            # GLM-5.2（国际 Z.ai）
 /model glm-global-5.1            # GLM-5.1（国际 Z.ai）
 /model step-3.7-flash            # Step 3.7 Flash（按量付费）
@@ -526,6 +528,11 @@ Key 只配在某个项目目录的 `.env` 里时，网关是项目级的，换�
 DeepSeek Anthropic 兼容接口会忽略 `metadata` 字段，但某些 Claude Code 会话会携带包含特殊字符的 `metadata.user_id`，导致 DeepSeek 在请求校验阶段返回 400。路由器会在转发 DeepSeek 请求前移除该元数据，不影响上下文、工具调用或模型输出。
 
 ## 更新日志
+
+### v1.12.0
+
+- **GLM 国内 provider 更名为 `glm-plan`（GLM Coding Plan）**，如实反映其订阅属性：`open.bigmodel.cn/api/anthropic` 是智谱国内唯一的 Anthropic 兼容端点，且被 Coding Plan 门控——按量付费 key / tokens 资源包实测返回 `429 [1309]`，[官方 FAQ](https://docs.bigmodel.cn/cn/coding-plan/faq) 明确资源包在 Claude Code 通道不可用、套餐额度耗尽也不转按量。模型键 `glm-5.2` / `glm-5.1` 变为 `glm-plan-5.2` / `glm-plan-5.1`，环境变量 `GLM_API_KEY` → **`GLM_PLAN_API_KEY`**（迁移：把订阅 key 换到新变量名即可）；旧别名 `glm` / `zhipu` / `chatglm` / `glm-5.2` / `glm-5.1` / `glm-5` 全部保留指向订阅模型，`/model glm` 不受影响
+- 说明：智谱国内**按量付费暂无法接入** ccmr——按量只提供 OpenAI 协议（`/api/paas/v4`），无 Anthropic 兼容端点（候选路径实测均 404），ccmr 是 Anthropic 协议直通网关不做协议转换；待智谱开通按量 Anthropic 端点后再支持。GLM Global（Z.ai `glm-global`）不受本次变更影响
 
 ### v1.11.3
 

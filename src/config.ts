@@ -246,11 +246,16 @@ export const DEFAULT_CONFIG: RouterConfig = {
         },
       },
     },
-    glm: {
-      display_name: 'GLM CN',
-      provider: 'zhipu',
+    'glm-plan': {
+      display_name: 'GLM Coding Plan',
+      provider: 'zhipu-coding',
+      // 智谱 GLM Coding Plan 订阅专属通道（bigmodel.cn/claude-code）。
+      // open.bigmodel.cn/api/anthropic 是国内唯一的 Anthropic 兼容端点，且被
+      // Coding Plan 门控：按量付费 key / tokens 资源包打过去会 429 [1309]，
+      // 官方 FAQ 明确资源包在此不可用、套餐耗尽也不转按量。国内按量付费只有
+      // OpenAI 协议（/api/paas/v4），无 Anthropic 通道，故没有按量 glm provider。
       base_url: 'https://open.bigmodel.cn/api/anthropic',
-      api_key_env: 'GLM_API_KEY',
+      api_key_env: 'GLM_PLAN_API_KEY',
       auth_header: 'x-api-key',
       auth_type: 'api_key',
       supports_streaming: true,
@@ -258,13 +263,13 @@ export const DEFAULT_CONFIG: RouterConfig = {
       default_variant: '5.2',
       variants: {
         '5.2': {
-          display_name: 'GLM-5.2',
+          display_name: 'GLM-5.2 (Coding Plan)',
           model_id: 'glm-5.2',
           max_tokens: 131072,
           context_window: 1000000,
         },
         '5.1': {
-          display_name: 'GLM-5.1',
+          display_name: 'GLM-5.1 (Coding Plan)',
           model_id: 'glm-5.1',
           max_tokens: 131072,
           context_window: 204800,
@@ -544,12 +549,15 @@ export const DEFAULT_CONFIG: RouterConfig = {
     'qwen-plan-max': 'qwen-plan-3.8-max',
     'qwen-plan-3.7': 'qwen-plan-3.7-max',
     'qwen-plan-3.7-max': 'qwen-plan-3.7-max',
-    glm: 'glm-5.2',
-    'glm-5': 'glm-5.1',
-    'glm-5.1': 'glm-5.1',
-    'glm-5.2': 'glm-5.2',
-    zhipu: 'glm-5.2',
-    chatglm: 'glm-5.2',
+    glm: 'glm-plan-5.2',
+    'glm-5': 'glm-plan-5.1',
+    'glm-5.1': 'glm-plan-5.1',
+    'glm-5.2': 'glm-plan-5.2',
+    zhipu: 'glm-plan-5.2',
+    chatglm: 'glm-plan-5.2',
+    'glm-plan': 'glm-plan-5.2',
+    'glm-plan-5.2': 'glm-plan-5.2',
+    'glm-plan-5.1': 'glm-plan-5.1',
     'glm-global': 'glm-global-5.2',
     'glm-global-5.2': 'glm-global-5.2',
     'glm-global-5.1': 'glm-global-5.1',
@@ -1325,22 +1333,26 @@ providers:
         max_tokens: 65536
         context_window: 1000000
 
-  glm:
-    display_name: GLM CN
-    provider: zhipu
+  # 智谱 GLM Coding Plan 订阅专属通道（bigmodel.cn/claude-code）。
+  # open.bigmodel.cn/api/anthropic 被 Coding Plan 门控：按量付费 key /
+  # tokens 资源包会 429 [1309]。国内按量付费只有 OpenAI 协议（/api/paas/v4），
+  # 无 Anthropic 通道，故没有按量 glm provider。
+  glm-plan:
+    display_name: GLM Coding Plan
+    provider: zhipu-coding
     base_url: https://open.bigmodel.cn/api/anthropic
-    api_key_env: GLM_API_KEY
+    api_key_env: GLM_PLAN_API_KEY
     auth_header: x-api-key
     auth_type: api_key
     default_variant: "5.2"
     variants:
       5.2:
-        display_name: "GLM-5.2"
+        display_name: "GLM-5.2 (Coding Plan)"
         model_id: glm-5.2
         max_tokens: 131072
         context_window: 1000000
       5.1:
-        display_name: "GLM-5.1"
+        display_name: "GLM-5.1 (Coding Plan)"
         model_id: glm-5.1
         max_tokens: 131072
         context_window: 204800
@@ -1572,12 +1584,15 @@ aliases:
   qwen-plan-max: qwen-plan-3.8-max
   qwen-plan-3.7: qwen-plan-3.7-max
   qwen-plan-3.7-max: qwen-plan-3.7-max
-  glm: glm-5.2
-  glm-5: glm-5.1
-  glm-5.1: glm-5.1
-  glm-5.2: glm-5.2
-  zhipu: glm-5.2
-  chatglm: glm-5.2
+  glm: glm-plan-5.2
+  glm-5: glm-plan-5.1
+  glm-5.1: glm-plan-5.1
+  glm-5.2: glm-plan-5.2
+  zhipu: glm-plan-5.2
+  chatglm: glm-plan-5.2
+  glm-plan: glm-plan-5.2
+  glm-plan-5.2: glm-plan-5.2
+  glm-plan-5.1: glm-plan-5.1
   glm-global: glm-global-5.2
   glm-global-5.2: glm-global-5.2
   glm-global-5.1: glm-global-5.1
@@ -1659,8 +1674,10 @@ QWEN_API_KEY=
 # Qwen Token Plan 订阅 - https://platform.qianwenai.com/ (sk-sp- 订阅 Key，专属接入点 token-plan.cn-beijing.maas.aliyuncs.com)
 QWEN_PLAN_API_KEY=
 
-# GLM CN (智谱) - https://open.bigmodel.cn/
-GLM_API_KEY=
+# GLM Coding Plan (智谱订阅) - https://bigmodel.cn/claude-code
+# 仅限 Coding Plan 订阅 key；按量付费 key / tokens 资源包会 429 [1309]。
+# 国内按量付费只有 OpenAI 协议，无 Anthropic 通道，ccmr 暂无法接入。
+GLM_PLAN_API_KEY=
 
 # GLM Global (Z.ai) - https://z.ai/model-api
 GLM_GLOBAL_API_KEY=
