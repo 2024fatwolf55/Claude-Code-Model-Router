@@ -197,8 +197,9 @@ ccmr claude --print --output-format json "你的问题"
 | `kimi-plan-for-coding-highspeed` | `kimi-plan-highspeed` | Kimi K2.7 Code HighSpeed（Allegretto 及以上） | Kimi Code 会员订阅 |
 | `minimax-m3` | `minimax`, `minimax-cn`, `mm` | MiniMax M3 | MiniMax CN |
 | `minimax-global-m3` | `minimax-global`, `minimax-io` | MiniMax M3 | MiniMax Global |
-| `qwen3.7-max` | `qwen`, `qwen-max`, `qwen3.7`, `tongyi` | Qwen3.7 Max | 阿里云（按量付费） |
-| `qwen-plan-3.8-max` | `qwen-plan`, `qwen-plan-3.8`, `qwen-plan-max`, `qwen3.8`, `qwen3.8-max` | Qwen3.8 Max (Preview) | 千问 Token Plan（订阅） |
+| `qwen3.8-max` | `qwen`, `tongyi`, `qwen3.8` | Qwen3.8 Max | 阿里云（按量付费） |
+| `qwen3.7-max` | `qwen-max`, `qwen3.7` | Qwen3.7 Max | 阿里云（按量付费） |
+| `qwen-plan-3.8-max` | `qwen-plan`, `qwen-plan-3.8`, `qwen-plan-max` | Qwen3.8 Max | 千问 Token Plan（订阅） |
 | `qwen-plan-3.7-max` | `qwen-plan-3.7` | Qwen3.7 Max | 千问 Token Plan（订阅） |
 | `glm-plan-5.2` | `glm-plan`, `glm`, `glm-5.2`, `zhipu`, `chatglm` | GLM-5.2 | 智谱 GLM Coding Plan（订阅） |
 | `glm-global-5.2` | `glm-global`, `zai`, `z-ai` | GLM-5.2 | Z.ai（国际） |
@@ -226,7 +227,7 @@ ccmr claude --print --output-format json "你的问题"
 | Kimi K3 (Coding Plan `kimi-plan-k3-1m` / `kimi-plan-k3`) | 1M / 256K（按档位） | 1M / 128K |
 | Kimi K2.7 Code / HighSpeed (Coding Plan) | 256K | 32K |
 | MiniMax M3 (CN / Global) | 1M | 128K |
-| Qwen3.8 Max Preview (仅 Token Plan) | 1M | 64K |
+| Qwen3.8 Max (按量付费 / Token Plan) | 1M | 64K |
 | Qwen3.7 Max (按量付费 / Token Plan) | 1M | 64K |
 | GLM-5.2 (Coding Plan / 国际) | 1M | 128K |
 | Step 3.7 Flash (按量付费 / Step Plan) | 256K | 384K |
@@ -405,8 +406,8 @@ npx claude-code-model-router claude
 ```bash
 # 使用短名称（向后兼容）
 /model deepseek   # 切换到 DeepSeek V4 Pro
-/model qwen       # 切换到 Qwen3.7 Max（按量付费）
-/model qwen-plan  # 切换到 Qwen3.8 Max Preview（千问 Token Plan 订阅）
+/model qwen       # 切换到 Qwen3.8 Max（按量付费）
+/model qwen-plan  # 切换到 Qwen3.8 Max（千问 Token Plan 订阅）
 /model glm        # 切换到 GLM-5.2（智谱 Coding Plan 订阅）
 /model glm-global # 切换到 GLM-5.2（国际 Z.ai）
 /model seed       # 切换到 Doubao Seed 2.1 Pro（火山方舟 按量付费）
@@ -434,8 +435,9 @@ npx claude-code-model-router claude
 /model kimi-k2.6                 # Kimi K2.6
 /model kimi-k2.7-code            # Kimi K2.7 Code
 /model kimi-k2.7-code-highspeed  # Kimi K2.7 Code HighSpeed
+/model qwen3.8-max               # Qwen3.8 Max（按量付费；别名 qwen / qwen3.8）
 /model qwen3.7-max               # Qwen3.7 Max（按量付费）
-/model qwen-plan-3.8-max         # Qwen3.8 Max Preview（Token Plan 订阅；别名 qwen3.8 / qwen3.8-max）
+/model qwen-plan-3.8-max         # Qwen3.8 Max（Token Plan 订阅）
 /model qwen-plan-3.7-max         # Qwen3.7 Max（Token Plan 订阅）
 /model seed-2.1-pro              # Doubao Seed 2.1 Pro（按量付费）
 /model seed-2.1-turbo            # Doubao Seed 2.1 Turbo（按量付费）
@@ -523,6 +525,11 @@ Key 只配在某个项目目录的 `.env` 里时，网关是项目级的，换�
 DeepSeek Anthropic 兼容接口会忽略 `metadata` 字段，但某些 Claude Code 会话会携带包含特殊字符的 `metadata.user_id`，导致 DeepSeek 在请求校验阶段返回 400。路由器会在转发 DeepSeek 请求前移除该元数据，不影响上下文、工具调用或模型输出。
 
 ## 更新日志
+
+### v1.14.0
+
+- **Qwen3.8 Max 正式版（GA）**：模型 ID 去掉 `-preview` 后缀，统一更新为 `qwen3.8-max`（旧 `qwen3.8-max-preview` 上游暂可用但已弃用），`qwen-plan-3.8-max` 同步切到 GA id
+- **恢复按量付费 `qwen3.8-max` 并设为默认**：正式版已开放按量付费（实测按量 key 在 dashscope Anthropic 端点返回 200，兑现 v1.11.1 的"待开放后恢复"）。裸别名 `qwen` / `tongyi` 及 `qwen3.8` / `qwen3.8-max` 现指向按量版 3.8；`qwen3.7-max`（别名 `qwen-max` / `qwen3.7`）保留
 
 ### v1.13.0
 

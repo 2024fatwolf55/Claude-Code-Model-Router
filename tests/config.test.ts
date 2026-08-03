@@ -154,21 +154,27 @@ describe('Kimi Code: coding-plan subscription provider', () => {
   });
 });
 
-describe('Qwen 3.8: Token-Plan-only, 3.5 removal, pay-go stays on 3.7', () => {
+describe('Qwen 3.8 GA: pay-go restored as default, Token Plan on the GA id', () => {
   const manager = new ConfigManager(null);
   const config = manager.getConfig();
 
-  it('keeps the pay-as-you-go qwen provider on 3.7-max (3.8 is not pay-go)', () => {
-    // qwen3.8-max-preview returns 403 on pay-as-you-go keys (Token-Plan-only),
-    // so it must NOT be a pay-go model; the bare qwen alias stays on 3.7.
-    expect(config.models['qwen3.8-max']).toBeUndefined();
-    const model = config.models['qwen3.7-max'];
+  it('restores qwen3.8-max as the pay-as-you-go default', () => {
+    // The GA release dropped the -preview suffix AND opened pay-as-you-go
+    // access (verified live: dashscope endpoint returns 200 with a pay-go
+    // key), so the v1.11.1 removal is reverted: 3.8 is back as the pay-go
+    // default and the bare aliases point at it.
+    const model = config.models['qwen3.8-max'];
     expect(model).toBeDefined();
-    expect(model.model_id).toBe('qwen3.7-max');
+    expect(model.model_id).toBe('qwen3.8-max');
     expect(model.api_key_env).toBe('QWEN_API_KEY');
-    expect(manager.resolveModelName('qwen')).toBe('qwen3.7-max');
-    expect(manager.resolveModelName('tongyi')).toBe('qwen3.7-max');
+    expect(manager.resolveModelName('qwen')).toBe('qwen3.8-max');
+    expect(manager.resolveModelName('tongyi')).toBe('qwen3.8-max');
+    expect(manager.resolveModelName('qwen3.8')).toBe('qwen3.8-max');
+    expect(manager.resolveModelName('qwen3.8-max')).toBe('qwen3.8-max');
+    // 3.7 stays available under its versioned aliases
+    expect(config.models['qwen3.7-max'].model_id).toBe('qwen3.7-max');
     expect(manager.resolveModelName('qwen-max')).toBe('qwen3.7-max');
+    expect(manager.resolveModelName('qwen3.7')).toBe('qwen3.7-max');
   });
 
   it('removes the qwen3.5 models and their alias', () => {
@@ -178,23 +184,20 @@ describe('Qwen 3.8: Token-Plan-only, 3.5 removal, pay-go stays on 3.7', () => {
     expect(config.models[manager.resolveModelName('qwen3.5')]).toBeUndefined();
   });
 
-  it('serves qwen3.8-max-preview only through the Token Plan provider', () => {
+  it('keeps the Token Plan provider on its dedicated endpoint with the GA id', () => {
     // sk-sp- keys from platform.qianwenai.com only work on the dedicated
-    // token-plan endpoint (they 403 on the pay-as-you-go dashscope one), so
-    // the subscription is its own provider/key + base_url — and the only
-    // place the preview model actually resolves.
+    // token-plan endpoint (they 403 on the pay-as-you-go dashscope one).
+    // The subscription model now uses the GA id too (the old -preview id
+    // still answers upstream but is deprecated).
     const model = config.models['qwen-plan-3.8-max'];
     expect(model).toBeDefined();
-    expect(model.model_id).toBe('qwen3.8-max-preview');
+    expect(model.model_id).toBe('qwen3.8-max');
     expect(model.base_url).toBe(
       'https://token-plan.cn-beijing.maas.aliyuncs.com/apps/anthropic'
     );
     expect(model.api_key_env).toBe('QWEN_PLAN_API_KEY');
     expect(model.auth_type).toBe('api_key');
     expect(manager.resolveModelName('qwen-plan')).toBe('qwen-plan-3.8-max');
-    // the intuitive 3.8 names route to the subscription model (its only home)
-    expect(manager.resolveModelName('qwen3.8')).toBe('qwen-plan-3.8-max');
-    expect(manager.resolveModelName('qwen3.8-max')).toBe('qwen-plan-3.8-max');
     expect(config.models['qwen-plan-3.7-max'].model_id).toBe('qwen3.7-max');
     expect(config.models['qwen-plan-3.7-max'].api_key_env).toBe('QWEN_PLAN_API_KEY');
   });
