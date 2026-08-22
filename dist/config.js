@@ -41,6 +41,14 @@ exports.DEFAULT_CONFIG = {
                     max_tokens: 393216,
                     context_window: 1048576,
                 },
+                // Only DeepSeek model that accepts image input (Anthropic image
+                // blocks in user messages); the text models 400 on images.
+                'v4-flash-vision-exp': {
+                    display_name: 'DeepSeek V4 Flash Vision (Exp)',
+                    model_id: 'deepseek-v4-flash-vision-exp',
+                    max_tokens: 393216,
+                    context_window: 1048576,
+                },
             },
         },
         kimi: {
@@ -273,10 +281,18 @@ exports.DEFAULT_CONFIG = {
             auth_type: 'api_key',
             supports_streaming: true,
             supports_tools: true,
-            default_variant: '5.2',
+            default_variant: '5.3',
             variants: {
+                // GLM-5.3 always runs with reasoning enabled (low/high/max, default
+                // max); upstream rejects thinking.type: "disabled".
+                '5.3': {
+                    display_name: 'GLM-5.3 (Coding Plan)',
+                    model_id: 'glm-5.3',
+                    max_tokens: 131072,
+                    context_window: 1000000,
+                },
                 // GLM-5.1 removed: Zhipu retired it (coding-plan calls auto-switch
-                // to GLM-5.2 upstream), so 5.2 is the only GLM variant.
+                // to GLM-5.2 upstream).
                 '5.2': {
                     display_name: 'GLM-5.2 (Coding Plan)',
                     model_id: 'glm-5.2',
@@ -294,8 +310,14 @@ exports.DEFAULT_CONFIG = {
             auth_type: 'api_key',
             supports_streaming: true,
             supports_tools: true,
-            default_variant: '5.2',
+            default_variant: '5.3',
             variants: {
+                '5.3': {
+                    display_name: 'GLM-5.3 (Global)',
+                    model_id: 'glm-5.3',
+                    max_tokens: 131072,
+                    context_window: 1000000,
+                },
                 '5.2': {
                     display_name: 'GLM-5.2 (Global)',
                     model_id: 'glm-5.2',
@@ -502,6 +524,8 @@ exports.DEFAULT_CONFIG = {
         'deepseek-pro': 'deepseek-v4-pro',
         'deepseek-flash': 'deepseek-v4-flash',
         'deepseek-chat': 'deepseek-v4-flash',
+        'deepseek-vision': 'deepseek-v4-flash-vision-exp',
+        'ds-vision': 'deepseek-v4-flash-vision-exp',
         ds: 'deepseek-v4-pro',
         kimi: 'kimi-k2.6',
         'kimi-k2': 'kimi-k2.6',
@@ -551,16 +575,19 @@ exports.DEFAULT_CONFIG = {
         'qwen-plan-max': 'qwen-plan-3.8-max',
         'qwen-plan-3.7': 'qwen-plan-3.7-max',
         'qwen-plan-3.7-max': 'qwen-plan-3.7-max',
-        glm: 'glm-plan-5.2',
+        glm: 'glm-plan-5.3',
+        'glm-5.3': 'glm-plan-5.3',
         'glm-5.2': 'glm-plan-5.2',
-        zhipu: 'glm-plan-5.2',
-        chatglm: 'glm-plan-5.2',
-        'glm-plan': 'glm-plan-5.2',
+        zhipu: 'glm-plan-5.3',
+        chatglm: 'glm-plan-5.3',
+        'glm-plan': 'glm-plan-5.3',
+        'glm-plan-5.3': 'glm-plan-5.3',
         'glm-plan-5.2': 'glm-plan-5.2',
-        'glm-global': 'glm-global-5.2',
+        'glm-global': 'glm-global-5.3',
+        'glm-global-5.3': 'glm-global-5.3',
         'glm-global-5.2': 'glm-global-5.2',
-        zai: 'glm-global-5.2',
-        'z-ai': 'glm-global-5.2',
+        zai: 'glm-global-5.3',
+        'z-ai': 'glm-global-5.3',
         step: 'step-3.7-flash',
         'step-3.7': 'step-3.7-flash',
         'step-3.7-flash': 'step-3.7-flash',
@@ -1099,6 +1126,12 @@ providers:
         model_id: deepseek-v4-flash
         max_tokens: 393216
         context_window: 1048576
+      # 唯一支持图片输入的 DeepSeek 模型（Anthropic image block）；文本模型收到图片会 400
+      v4-flash-vision-exp:
+        display_name: "DeepSeek V4 Flash Vision (Exp)"
+        model_id: deepseek-v4-flash-vision-exp
+        max_tokens: 393216
+        context_window: 1048576
 
   kimi:
     display_name: Kimi
@@ -1280,8 +1313,14 @@ providers:
     api_key_env: GLM_PLAN_API_KEY
     auth_header: x-api-key
     auth_type: api_key
-    default_variant: "5.2"
+    default_variant: "5.3"
     variants:
+      # GLM-5.3 强制开启思考（low/high/max，默认 max），不支持关闭
+      5.3:
+        display_name: "GLM-5.3 (Coding Plan)"
+        model_id: glm-5.3
+        max_tokens: 131072
+        context_window: 1000000
       # GLM-5.1 removed: Zhipu retired it (coding-plan calls auto-switch to 5.2)
       5.2:
         display_name: "GLM-5.2 (Coding Plan)"
@@ -1296,8 +1335,13 @@ providers:
     api_key_env: GLM_GLOBAL_API_KEY
     auth_header: x-api-key
     auth_type: api_key
-    default_variant: "5.2"
+    default_variant: "5.3"
     variants:
+      5.3:
+        display_name: "GLM-5.3 (Global)"
+        model_id: glm-5.3
+        max_tokens: 131072
+        context_window: 1000000
       5.2:
         display_name: "GLM-5.2 (Global)"
         model_id: glm-5.2
@@ -1462,6 +1506,8 @@ aliases:
   deepseek-pro: deepseek-v4-pro
   deepseek-flash: deepseek-v4-flash
   deepseek-chat: deepseek-v4-flash
+  deepseek-vision: deepseek-v4-flash-vision-exp
+  ds-vision: deepseek-v4-flash-vision-exp
   ds: deepseek-v4-pro
   kimi: kimi-k2.6
   kimi-k2: kimi-k2.6
@@ -1511,16 +1557,19 @@ aliases:
   qwen-plan-max: qwen-plan-3.8-max
   qwen-plan-3.7: qwen-plan-3.7-max
   qwen-plan-3.7-max: qwen-plan-3.7-max
-  glm: glm-plan-5.2
+  glm: glm-plan-5.3
+  glm-5.3: glm-plan-5.3
   glm-5.2: glm-plan-5.2
-  zhipu: glm-plan-5.2
-  chatglm: glm-plan-5.2
-  glm-plan: glm-plan-5.2
+  zhipu: glm-plan-5.3
+  chatglm: glm-plan-5.3
+  glm-plan: glm-plan-5.3
+  glm-plan-5.3: glm-plan-5.3
   glm-plan-5.2: glm-plan-5.2
-  glm-global: glm-global-5.2
+  glm-global: glm-global-5.3
+  glm-global-5.3: glm-global-5.3
   glm-global-5.2: glm-global-5.2
-  zai: glm-global-5.2
-  z-ai: glm-global-5.2
+  zai: glm-global-5.3
+  z-ai: glm-global-5.3
   step: step-3.7-flash
   step-3.7: step-3.7-flash
   step-3.7-flash: step-3.7-flash

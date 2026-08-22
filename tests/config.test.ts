@@ -220,15 +220,15 @@ describe('GLM: Coding-Plan-only provider (no domestic pay-go Anthropic channel)'
     expect(model.base_url).toBe('https://open.bigmodel.cn/api/anthropic');
     expect(model.api_key_env).toBe('GLM_PLAN_API_KEY');
     expect(model.auth_type).toBe('api_key');
-    expect(manager.resolveModelName('glm-plan')).toBe('glm-plan-5.2');
+    expect(manager.resolveModelName('glm-plan')).toBe('glm-plan-5.3');
   });
 
   it('keeps every legacy glm alias working against the renamed provider', () => {
     // The rename must not break /model glm for existing users.
     expect(config.models['glm-5.2']).toBeUndefined();
-    expect(manager.resolveModelName('glm')).toBe('glm-plan-5.2');
-    expect(manager.resolveModelName('zhipu')).toBe('glm-plan-5.2');
-    expect(manager.resolveModelName('chatglm')).toBe('glm-plan-5.2');
+    expect(manager.resolveModelName('glm')).toBe('glm-plan-5.3');
+    expect(manager.resolveModelName('zhipu')).toBe('glm-plan-5.3');
+    expect(manager.resolveModelName('chatglm')).toBe('glm-plan-5.3');
     expect(manager.resolveModelName('glm-5.2')).toBe('glm-plan-5.2');
   });
 
@@ -245,7 +245,64 @@ describe('GLM: Coding-Plan-only provider (no domestic pay-go Anthropic channel)'
 
   it('keeps the Z.ai global 5.2 model', () => {
     expect(config.models['glm-global-5.2'].api_key_env).toBe('GLM_GLOBAL_API_KEY');
-    expect(manager.resolveModelName('glm-global')).toBe('glm-global-5.2');
+    expect(config.models['glm-global-5.2'].model_id).toBe('glm-5.2');
+  });
+});
+
+describe('GLM-5.3: new flagship default on both plan endpoints', () => {
+  const manager = new ConfigManager(null);
+  const config = manager.getConfig();
+
+  it('adds glm-5.3 as the default Coding Plan variant', () => {
+    // docs.bigmodel.cn/cn/guide/models/text/glm-5.3: model id glm-5.3,
+    // 1M context, 128K max output, Anthropic endpoint unchanged
+    // (open.bigmodel.cn/api/anthropic); Coding Plan carries 5.3 for all
+    // subscribers.
+    const model = config.models['glm-plan-5.3'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('glm-5.3');
+    expect(model.max_tokens).toBe(131072);
+    expect(model.context_window).toBe(1000000);
+    expect(model.base_url).toBe('https://open.bigmodel.cn/api/anthropic');
+    expect(model.api_key_env).toBe('GLM_PLAN_API_KEY');
+    expect(manager.resolveModelName('glm-5.3')).toBe('glm-plan-5.3');
+  });
+
+  it('adds glm-5.3 as the default Z.ai global variant', () => {
+    // docs.z.ai/guides/llm/glm-5.3: same id and limits on
+    // api.z.ai/api/anthropic.
+    const model = config.models['glm-global-5.3'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('glm-5.3');
+    expect(model.max_tokens).toBe(131072);
+    expect(model.context_window).toBe(1000000);
+    expect(manager.resolveModelName('glm-global')).toBe('glm-global-5.3');
+    expect(manager.resolveModelName('zai')).toBe('glm-global-5.3');
+    expect(manager.resolveModelName('z-ai')).toBe('glm-global-5.3');
+  });
+});
+
+describe('DeepSeek Vision: experimental image model on the shared endpoint', () => {
+  const manager = new ConfigManager(null);
+  const config = manager.getConfig();
+
+  it('exposes deepseek-v4-flash-vision-exp with the shared DeepSeek connection', () => {
+    // api-docs.deepseek.com/guides/vision + /quick_start/pricing: Anthropic
+    // format on api.deepseek.com/anthropic, 1M context, 384K max output,
+    // Anthropic image blocks (base64/url/file) accepted in user messages.
+    const model = config.models['deepseek-v4-flash-vision-exp'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('deepseek-v4-flash-vision-exp');
+    expect(model.max_tokens).toBe(393216);
+    expect(model.context_window).toBe(1048576);
+    expect(model.base_url).toBe('https://api.deepseek.com/anthropic');
+    expect(model.api_key_env).toBe('DEEPSEEK_API_KEY');
+  });
+
+  it('adds vision aliases without touching the text default', () => {
+    expect(manager.resolveModelName('deepseek-vision')).toBe('deepseek-v4-flash-vision-exp');
+    expect(manager.resolveModelName('ds-vision')).toBe('deepseek-v4-flash-vision-exp');
+    expect(manager.resolveModelName('deepseek')).toBe('deepseek-v4-pro');
   });
 });
 

@@ -183,6 +183,7 @@ ccmr claude --print --output-format json "你的问题"
 |--------|----------|------|--------|
 | `deepseek-v4-pro` | `deepseek`, `deepseek-v4`, `deepseek-pro`, `ds` | DeepSeek V4 Pro | DeepSeek |
 | `deepseek-v4-flash` | `deepseek-flash`, `deepseek-chat` | DeepSeek V4 Flash | DeepSeek |
+| `deepseek-v4-flash-vision-exp` | `deepseek-vision`, `ds-vision` | DeepSeek V4 Flash Vision（实验版，支持图片输入） | DeepSeek |
 | `kimi-k3` | `k3` | Kimi K3 | Moonshot（国际站） |
 | `kimi-k2.6` | `kimi`, `kimi-k2`, `moonshot` | Kimi K2.6 | Moonshot（国际站） |
 | `kimi-k2.7-code` | `kimi-code`, `k2.7-code` | Kimi K2.7 Code | Moonshot（国际站） |
@@ -201,8 +202,10 @@ ccmr claude --print --output-format json "你的问题"
 | `qwen3.7-max` | `qwen-max`, `qwen3.7` | Qwen3.7 Max | 阿里云（按量付费） |
 | `qwen-plan-3.8-max` | `qwen-plan`, `qwen-plan-3.8`, `qwen-plan-max` | Qwen3.8 Max | 千问 Token Plan（订阅） |
 | `qwen-plan-3.7-max` | `qwen-plan-3.7` | Qwen3.7 Max | 千问 Token Plan（订阅） |
-| `glm-plan-5.2` | `glm-plan`, `glm`, `glm-5.2`, `zhipu`, `chatglm` | GLM-5.2 | 智谱 GLM Coding Plan（订阅） |
-| `glm-global-5.2` | `glm-global`, `zai`, `z-ai` | GLM-5.2 | Z.ai（国际） |
+| `glm-plan-5.3` | `glm-plan`, `glm`, `glm-5.3`, `zhipu`, `chatglm` | GLM-5.3 | 智谱 GLM Coding Plan（订阅） |
+| `glm-plan-5.2` | `glm-5.2` | GLM-5.2 | 智谱 GLM Coding Plan（订阅） |
+| `glm-global-5.3` | `glm-global`, `zai`, `z-ai` | GLM-5.3 | Z.ai（国际） |
+| `glm-global-5.2` | - | GLM-5.2 | Z.ai（国际） |
 | `step-3.7-flash` | `step`, `step-3.7`, `stepfun` | Step 3.7 Flash | 阶跃星辰(按量付费) |
 | `step-plan-3.7-flash` | `step-plan`, `step-plan-3.7`, `stepplan` | Step 3.7 Flash (Step Plan) | 阶跃星辰(订阅) |
 | `mimo-v2.5-pro` | `mimo`, `mimo-pro`, `mimo-token-sgp`, `xiaomi` | MiMo V2.5 Pro | MiMo Token Plan SGP |
@@ -221,6 +224,7 @@ ccmr claude --print --output-format json "你的问题"
 |------|----------------|-------------------|
 | DeepSeek V4 Pro | 1M | 384K |
 | DeepSeek V4 Flash | 1M | 384K |
+| DeepSeek V4 Flash Vision (Exp) | 1M | 384K |
 | Kimi K3 (国际站 / 国内) | 1M | 1M（默认 128K） |
 | Kimi K2.6 (国际站 / 国内) | 256K | 32K |
 | Kimi K2.7 Code / HighSpeed (国际站 / 国内) | 256K | 32K |
@@ -229,7 +233,7 @@ ccmr claude --print --output-format json "你的问题"
 | MiniMax M3 (CN / Global) | 1M | 128K |
 | Qwen3.8 Max (按量付费 / Token Plan) | 1M | 64K |
 | Qwen3.7 Max (按量付费 / Token Plan) | 1M | 64K |
-| GLM-5.2 (Coding Plan / 国际) | 1M | 128K |
+| GLM-5.3 / GLM-5.2 (Coding Plan / 国际) | 1M | 128K |
 | Step 3.7 Flash (按量付费 / Step Plan) | 256K | 384K |
 | MiMo V2.5 Pro | 1M | 128K |
 | MiMo V2.5 | 1M | 128K |
@@ -381,7 +385,7 @@ claude
 ```bash
 npx claude-code-model-router claude
 ```
-- 使用第三方 AI 模型（DeepSeek V4, GLM-5.2, Qwen3.8, Kimi K3, Doubao Seed 2.1, MiMo V2.5 等）
+- 使用第三方 AI 模型（DeepSeek V4, GLM-5.3, Qwen3.8, Kimi K3, Doubao Seed 2.1, MiMo V2.5 等）
 - 按 API 使用量付费
 - 配置存储在 `~/.claude-gateway/`
 
@@ -408,8 +412,9 @@ npx claude-code-model-router claude
 /model deepseek   # 切换到 DeepSeek V4 Pro
 /model qwen       # 切换到 Qwen3.8 Max（按量付费）
 /model qwen-plan  # 切换到 Qwen3.8 Max（千问 Token Plan 订阅）
-/model glm        # 切换到 GLM-5.2（智谱 Coding Plan 订阅）
-/model glm-global # 切换到 GLM-5.2（国际 Z.ai）
+/model glm        # 切换到 GLM-5.3（智谱 Coding Plan 订阅）
+/model glm-global # 切换到 GLM-5.3（国际 Z.ai）
+/model deepseek-vision # 切换到 DeepSeek V4 Flash Vision（实验版，支持图片输入）
 /model seed       # 切换到 Doubao Seed 2.1 Pro（火山方舟 按量付费）
 /model seed-plan  # 切换到 Doubao Seed 2.1 Pro（火山方舟 Agent Plan 订阅）
 /model step       # 切换到 Step 3.7 Flash（按量付费）
@@ -426,7 +431,9 @@ npx claude-code-model-router claude
 # 使用版本别名（明确指定版本）
 /model deepseek-v4-pro           # DeepSeek V4 Pro
 /model deepseek-v4-flash         # DeepSeek V4 Flash
+/model glm-plan-5.3              # GLM-5.3（智谱 Coding Plan 订阅）
 /model glm-plan-5.2              # GLM-5.2（智谱 Coding Plan 订阅）
+/model glm-global-5.3            # GLM-5.3（国际 Z.ai）
 /model glm-global-5.2            # GLM-5.2（国际 Z.ai）
 /model step-3.7-flash            # Step 3.7 Flash（按量付费）
 /model step-plan-3.7-flash       # Step 3.7 Flash（Step Plan 订阅）
@@ -525,6 +532,11 @@ Key 只配在某个项目目录的 `.env` 里时，网关是项目级的，换�
 DeepSeek Anthropic 兼容接口会忽略 `metadata` 字段，但某些 Claude Code 会话会携带包含特殊字符的 `metadata.user_id`，导致 DeepSeek 在请求校验阶段返回 400。路由器会在转发 DeepSeek 请求前移除该元数据，不影响上下文、工具调用或模型输出。
 
 ## 更新日志
+
+### v1.15.0
+
+- **新增 GLM-5.3**（[智谱文档](https://docs.bigmodel.cn/cn/guide/models/text/glm-5.3) / [Z.ai 文档](https://docs.z.ai/guides/llm/glm-5.3)）：智谱最新旗舰，1M 上下文、最大输出 128K，GLM Coding Plan 已全量上线。国内 `glm-plan-5.3` 与国际 `glm-global-5.3` 同步新增并设为默认——`glm` / `zhipu` / `glm-plan` 现指向 5.3，`glm-global` / `zai` 同理；5.2 保留（`glm-5.2` / `glm-plan-5.2` / `glm-global-5.2`）。注意：GLM-5.3 强制开启思考（`reasoning_effort` 支持 low/high/max，默认 max），上游不再接受 `thinking.type: "disabled"`
+- **新增 DeepSeek V4 Flash Vision（实验版）**（[视觉指南](https://api-docs.deepseek.com/guides/vision/)）：模型 `deepseek-v4-flash-vision-exp`（别名 `deepseek-vision` / `ds-vision`），DeepSeek 目前唯一支持图片输入的模型，Anthropic 协议 image block（base64 / url / file）直通可用；1M 上下文、最大输出 384K，价格与 V4 Flash 相同，复用 `DEEPSEEK_API_KEY` 与现有端点。文本默认模型不变（`deepseek` 仍指向 V4 Pro）；图片仅限 user 消息，文本模型收到图片会报 400
 
 ### v1.14.0
 
