@@ -306,6 +306,88 @@ describe('DeepSeek Vision: experimental image model on the shared endpoint', () 
   });
 });
 
+describe('GLM-5.3-Flash: multimodal flash tier on both plan endpoints', () => {
+  const manager = new ConfigManager(null);
+  const config = manager.getConfig();
+
+  it('adds glm-5.3-flash to the Coding Plan provider without moving the default', () => {
+    // docs.bigmodel.cn/cn/guide/models/vlm/glm-5.3-flash: model code
+    // glm-5.3-flash, 1M context, 128K max output, text params identical to
+    // GLM-5.3; docs.bigmodel.cn/cn/coding-plan/tool/claude configures it on
+    // open.bigmodel.cn/api/anthropic (same key/endpoint as glm-5.3).
+    const model = config.models['glm-plan-5.3-flash'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('glm-5.3-flash');
+    expect(model.max_tokens).toBe(131072);
+    expect(model.context_window).toBe(1000000);
+    expect(model.base_url).toBe('https://open.bigmodel.cn/api/anthropic');
+    expect(model.api_key_env).toBe('GLM_PLAN_API_KEY');
+    expect(manager.resolveModelName('glm-flash')).toBe('glm-plan-5.3-flash');
+    expect(manager.resolveModelName('glm-5.3-flash')).toBe('glm-plan-5.3-flash');
+    expect(manager.resolveModelName('glm-plan-flash')).toBe('glm-plan-5.3-flash');
+    expect(manager.resolveModelName('glm')).toBe('glm-plan-5.3');
+  });
+
+  it('adds glm-5.3-flash to the Z.ai global provider without moving the default', () => {
+    // docs.z.ai/guides/vlm/glm-5.3-flash + docs.z.ai/devpack/tool/claude:
+    // same id and limits on api.z.ai/api/anthropic.
+    const model = config.models['glm-global-5.3-flash'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('glm-5.3-flash');
+    expect(model.max_tokens).toBe(131072);
+    expect(model.context_window).toBe(1000000);
+    expect(model.base_url).toBe('https://api.z.ai/api/anthropic');
+    expect(model.api_key_env).toBe('GLM_GLOBAL_API_KEY');
+    expect(manager.resolveModelName('glm-global-flash')).toBe('glm-global-5.3-flash');
+    expect(manager.resolveModelName('zai-flash')).toBe('glm-global-5.3-flash');
+    expect(manager.resolveModelName('glm-global')).toBe('glm-global-5.3');
+  });
+});
+
+describe('Qwen3.8 Flash: multimodal flash tier on pay-go and Token Plan', () => {
+  const manager = new ConfigManager(null);
+  const config = manager.getConfig();
+
+  it('adds qwen3.8-flash to the pay-as-you-go provider without moving the default', () => {
+    // help.aliyun.com/zh/model-studio/qwen3-8-flash: id qwen3.8-flash,
+    // context 1,000,000, max output 131,072; listed as supported by the
+    // Bailian Anthropic-compatible Messages API (anthropic-api-messages).
+    const model = config.models['qwen3.8-flash'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('qwen3.8-flash');
+    expect(model.max_tokens).toBe(131072);
+    expect(model.context_window).toBe(1000000);
+    expect(model.base_url).toBe('https://dashscope.aliyuncs.com/apps/anthropic');
+    expect(model.api_key_env).toBe('QWEN_API_KEY');
+    expect(manager.resolveModelName('qwen-flash')).toBe('qwen3.8-flash');
+    expect(manager.resolveModelName('qwen3.8-flash')).toBe('qwen3.8-flash');
+    expect(manager.resolveModelName('qwen')).toBe('qwen3.8-max');
+  });
+
+  it('adds qwen3.8-flash to the Token Plan provider without moving the default', () => {
+    // platform.qianwenai.com latest-model doc: Token Plan credits cover
+    // Qwen3.8-Flash on the same subscription endpoint.
+    const model = config.models['qwen-plan-3.8-flash'];
+    expect(model).toBeDefined();
+    expect(model.model_id).toBe('qwen3.8-flash');
+    expect(model.max_tokens).toBe(131072);
+    expect(model.context_window).toBe(1000000);
+    expect(model.base_url).toBe('https://token-plan.cn-beijing.maas.aliyuncs.com/apps/anthropic');
+    expect(model.api_key_env).toBe('QWEN_PLAN_API_KEY');
+    expect(manager.resolveModelName('qwen-plan-flash')).toBe('qwen-plan-3.8-flash');
+    expect(manager.resolveModelName('qwen-plan-3.8-flash')).toBe('qwen-plan-3.8-flash');
+    expect(manager.resolveModelName('qwen-plan')).toBe('qwen-plan-3.8-max');
+  });
+
+  it('does not expose qwen3.8-flash-next (open weights only, no hosted Anthropic endpoint)', () => {
+    // Bailian returns 404 for a qwen3.8-flash-next model page, the Qwen AI
+    // platform / QwenCloud / OpenRouter catalogs do not list it, and the HF
+    // model card names qwen3.8-flash as the production API built on it.
+    expect(config.models['qwen3.8-flash-next']).toBeUndefined();
+    expect(manager.resolveModelName('qwen3.8-flash-next')).toBe('qwen3.8-flash-next');
+  });
+});
+
 describe('ConfigManager: user config merging', () => {
   it('fails closed when an explicit config path does not exist', () => {
     expect(() => new ConfigManager('/definitely-missing/ccmr-models.yaml')).toThrow(

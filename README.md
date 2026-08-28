@@ -200,12 +200,16 @@ ccmr claude --print --output-format json "你的问题"
 | `minimax-global-m3` | `minimax-global`, `minimax-io` | MiniMax M3 | MiniMax Global |
 | `qwen3.8-max` | `qwen`, `tongyi`, `qwen3.8` | Qwen3.8 Max | 阿里云（按量付费） |
 | `qwen3.7-max` | `qwen-max`, `qwen3.7` | Qwen3.7 Max | 阿里云（按量付费） |
+| `qwen3.8-flash` | `qwen-flash` | Qwen3.8 Flash（多模态，支持图片/视频输入） | 阿里云（按量付费） |
 | `qwen-plan-3.8-max` | `qwen-plan`, `qwen-plan-3.8`, `qwen-plan-max` | Qwen3.8 Max | 千问 Token Plan（订阅） |
 | `qwen-plan-3.7-max` | `qwen-plan-3.7` | Qwen3.7 Max | 千问 Token Plan（订阅） |
+| `qwen-plan-3.8-flash` | `qwen-plan-flash` | Qwen3.8 Flash（多模态，支持图片/视频输入） | 千问 Token Plan（订阅） |
 | `glm-plan-5.3` | `glm-plan`, `glm`, `glm-5.3`, `zhipu`, `chatglm` | GLM-5.3 | 智谱 GLM Coding Plan（订阅） |
 | `glm-plan-5.2` | `glm-5.2` | GLM-5.2 | 智谱 GLM Coding Plan（订阅） |
+| `glm-plan-5.3-flash` | `glm-flash`, `glm-5.3-flash`, `glm-plan-flash` | GLM-5.3-Flash（原生多模态） | 智谱 GLM Coding Plan（订阅） |
 | `glm-global-5.3` | `glm-global`, `zai`, `z-ai` | GLM-5.3 | Z.ai（国际） |
 | `glm-global-5.2` | - | GLM-5.2 | Z.ai（国际） |
+| `glm-global-5.3-flash` | `glm-global-flash`, `zai-flash` | GLM-5.3-Flash（原生多模态） | Z.ai（国际） |
 | `step-3.7-flash` | `step`, `step-3.7`, `stepfun` | Step 3.7 Flash | 阶跃星辰(按量付费) |
 | `step-plan-3.7-flash` | `step-plan`, `step-plan-3.7`, `stepplan` | Step 3.7 Flash (Step Plan) | 阶跃星辰(订阅) |
 | `mimo-v2.5-pro` | `mimo`, `mimo-pro`, `mimo-token-sgp`, `xiaomi` | MiMo V2.5 Pro | MiMo Token Plan SGP |
@@ -233,7 +237,9 @@ ccmr claude --print --output-format json "你的问题"
 | MiniMax M3 (CN / Global) | 1M | 128K |
 | Qwen3.8 Max (按量付费 / Token Plan) | 1M | 64K |
 | Qwen3.7 Max (按量付费 / Token Plan) | 1M | 64K |
+| Qwen3.8 Flash (按量付费 / Token Plan) | 1M | 128K |
 | GLM-5.3 / GLM-5.2 (Coding Plan / 国际) | 1M | 128K |
+| GLM-5.3-Flash (Coding Plan / 国际) | 1M | 128K |
 | Step 3.7 Flash (按量付费 / Step Plan) | 256K | 384K |
 | MiMo V2.5 Pro | 1M | 128K |
 | MiMo V2.5 | 1M | 128K |
@@ -415,6 +421,8 @@ npx claude-code-model-router claude
 /model glm        # 切换到 GLM-5.3（智谱 Coding Plan 订阅）
 /model glm-global # 切换到 GLM-5.3（国际 Z.ai）
 /model deepseek-vision # 切换到 DeepSeek V4 Flash Vision（实验版，支持图片输入）
+/model qwen-flash # 切换到 Qwen3.8 Flash（按量付费，多模态）
+/model glm-flash  # 切换到 GLM-5.3-Flash（智谱 Coding Plan 订阅，原生多模态）
 /model seed       # 切换到 Doubao Seed 2.1 Pro（火山方舟 按量付费）
 /model seed-plan  # 切换到 Doubao Seed 2.1 Pro（火山方舟 Agent Plan 订阅）
 /model step       # 切换到 Step 3.7 Flash（按量付费）
@@ -433,8 +441,10 @@ npx claude-code-model-router claude
 /model deepseek-v4-flash         # DeepSeek V4 Flash
 /model glm-plan-5.3              # GLM-5.3（智谱 Coding Plan 订阅）
 /model glm-plan-5.2              # GLM-5.2（智谱 Coding Plan 订阅）
+/model glm-plan-5.3-flash        # GLM-5.3-Flash（智谱 Coding Plan 订阅；别名 glm-flash）
 /model glm-global-5.3            # GLM-5.3（国际 Z.ai）
 /model glm-global-5.2            # GLM-5.2（国际 Z.ai）
+/model glm-global-5.3-flash      # GLM-5.3-Flash（国际 Z.ai；别名 glm-global-flash）
 /model step-3.7-flash            # Step 3.7 Flash（按量付费）
 /model step-plan-3.7-flash       # Step 3.7 Flash（Step Plan 订阅）
 /model minimax-m3                # MiniMax M3
@@ -446,6 +456,8 @@ npx claude-code-model-router claude
 /model qwen3.7-max               # Qwen3.7 Max（按量付费）
 /model qwen-plan-3.8-max         # Qwen3.8 Max（Token Plan 订阅）
 /model qwen-plan-3.7-max         # Qwen3.7 Max（Token Plan 订阅）
+/model qwen3.8-flash             # Qwen3.8 Flash（按量付费；别名 qwen-flash）
+/model qwen-plan-3.8-flash       # Qwen3.8 Flash（Token Plan 订阅；别名 qwen-plan-flash）
 /model seed-2.1-pro              # Doubao Seed 2.1 Pro（按量付费）
 /model seed-2.1-turbo            # Doubao Seed 2.1 Turbo（按量付费）
 /model seed-plan-2.1-pro         # Doubao Seed 2.1 Pro（Agent Plan 订阅）
@@ -532,6 +544,12 @@ Key 只配在某个项目目录的 `.env` 里时，网关是项目级的，换�
 DeepSeek Anthropic 兼容接口会忽略 `metadata` 字段，但某些 Claude Code 会话会携带包含特殊字符的 `metadata.user_id`，导致 DeepSeek 在请求校验阶段返回 400。路由器会在转发 DeepSeek 请求前移除该元数据，不影响上下文、工具调用或模型输出。
 
 ## 更新日志
+
+### v1.16.0
+
+- **新增 GLM-5.3-Flash**（[智谱文档](https://docs.bigmodel.cn/cn/guide/models/vlm/glm-5.3-flash) / [Z.ai 文档](https://docs.z.ai/guides/vlm/glm-5.3-flash)）：GLM-5 系列首个原生多模态模型（视频/图片/文本/文件输入），320B 总参、18B 激活，1M 上下文、最大输出 128K，定价为 GLM-5.3 的 1/10。国内 `glm-plan-5.3-flash`（别名 `glm-flash` / `glm-5.3-flash` / `glm-plan-flash`）与国际 `glm-global-5.3-flash`（别名 `glm-global-flash` / `zai-flash`）同步新增，端点与 Key 复用现有 provider；两份官方 Claude Code 配置均已直接使用 `glm-5.3-flash`。Coding Plan 额度为 GLM-5.3 的 3 倍。默认模型不变（`glm` / `glm-global` 仍指向 5.3）。与 GLM-5.3 一样强制开启思考
+- **新增 Qwen3.8 Flash**（[百炼模型信息](https://help.aliyun.com/zh/model-studio/qwen3-8-flash) / [百炼 Anthropic 兼容 API](https://help.aliyun.com/zh/model-studio/anthropic-api-messages)）：千问多模态 flash 档（图片/视频/文本输入），1M 上下文、最大输出 131,072；百炼北京按量价 ¥0.8 / ¥2.7 每百万 tokens（输入/输出）。按量 `qwen3.8-flash`（别名 `qwen-flash`）与 Token Plan `qwen-plan-3.8-flash`（别名 `qwen-plan-flash`）同步新增；默认模型不变（`qwen` / `qwen-plan` 仍指向 3.8 Max）。按量版实测 `ccmr doctor` 通过；Token Plan 版依据[千问 AI 平台 latest-model 文档](https://platform.qianwenai.com/docs/developer-guides/getting-started/latest-model)「Token Plan 支持 Qwen3.8-Flash」收录，但 [Token Plan 概述](https://platform.qianwenai.com/docs/token-plan/overview)的档位模型表尚未列出它（该表仍含已下线的 glm-5.1，应为过期），且本次未能实测（测试订阅对 3.8-max 同样返回 `403 AccessDenied.Unpurchased`）——若你的档位不含该模型，上游会返回同样的 403。国际版：百炼国际站（`{WorkspaceId}.ap-southeast-1.maas.aliyuncs.com`）与 QwenCloud（`dashscope-intl`）同样提供该模型，但 ccmr 目前没有国际版 Qwen provider，需要的话请开 issue
+- **关于 `qwen3.8-flash-next`**：它是 Qwen4 架构的开源预览版权重（[HF](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)，Qwen Community License），百炼 / 千问 AI 平台 / QwenCloud / OpenRouter 均无该 id 的托管 API，官方说明线上正式版即 `qwen3.8-flash`。因此不提供路由——需要它的话直接用 `qwen3.8-flash`
 
 ### v1.15.0
 

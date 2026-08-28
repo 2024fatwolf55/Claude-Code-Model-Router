@@ -235,6 +235,18 @@ exports.DEFAULT_CONFIG = {
                     max_tokens: 65536,
                     context_window: 1000000,
                 },
+                // Qwen3.8 Flash: multimodal (image/video/text in) flash tier, 1M
+                // context, 131,072 max output (help.aliyun.com/zh/model-studio/
+                // qwen3-8-flash); listed in Bailian's Anthropic-compatible model
+                // set. qwen3.8-flash-next is the open-weights preview this model is
+                // built on and has no hosted API anywhere, so it is not routed.
+                '3.8-flash': {
+                    model_key: 'qwen3.8-flash',
+                    display_name: 'Qwen3.8 Flash',
+                    model_id: 'qwen3.8-flash',
+                    max_tokens: 131072,
+                    context_window: 1000000,
+                },
             },
         },
         'qwen-plan': {
@@ -263,6 +275,17 @@ exports.DEFAULT_CONFIG = {
                     display_name: 'Qwen3.7 Max (Token Plan)',
                     model_id: 'qwen3.7-max',
                     max_tokens: 65536,
+                    context_window: 1000000,
+                },
+                // platform.qianwenai.com latest-model doc: Token Plan credits cover
+                // Qwen3.8-Flash on the same subscription endpoint. The (stale) tier
+                // tables on docs/token-plan/overview do not list it yet; unverified
+                // live because the test subscription returns 403
+                // AccessDenied.Unpurchased for 3.8-max as well.
+                '3.8-flash': {
+                    display_name: 'Qwen3.8 Flash (Token Plan)',
+                    model_id: 'qwen3.8-flash',
+                    max_tokens: 131072,
                     context_window: 1000000,
                 },
             },
@@ -299,6 +322,16 @@ exports.DEFAULT_CONFIG = {
                     max_tokens: 131072,
                     context_window: 1000000,
                 },
+                // GLM-5.3-Flash: first native multimodal GLM-5 model (video/image/
+                // text/file in), 1M context, 128K max output, text params identical
+                // to GLM-5.3 (thinking cannot be disabled). Coding Plan carries it
+                // with 3x the GLM-5.3 quota; same endpoint and key.
+                '5.3-flash': {
+                    display_name: 'GLM-5.3-Flash (Coding Plan)',
+                    model_id: 'glm-5.3-flash',
+                    max_tokens: 131072,
+                    context_window: 1000000,
+                },
             },
         },
         'glm-global': {
@@ -321,6 +354,12 @@ exports.DEFAULT_CONFIG = {
                 '5.2': {
                     display_name: 'GLM-5.2 (Global)',
                     model_id: 'glm-5.2',
+                    max_tokens: 131072,
+                    context_window: 1000000,
+                },
+                '5.3-flash': {
+                    display_name: 'GLM-5.3-Flash (Global)',
+                    model_id: 'glm-5.3-flash',
                     max_tokens: 131072,
                     context_window: 1000000,
                 },
@@ -575,6 +614,10 @@ exports.DEFAULT_CONFIG = {
         'qwen-plan-max': 'qwen-plan-3.8-max',
         'qwen-plan-3.7': 'qwen-plan-3.7-max',
         'qwen-plan-3.7-max': 'qwen-plan-3.7-max',
+        'qwen-flash': 'qwen3.8-flash',
+        'qwen3.8-flash': 'qwen3.8-flash',
+        'qwen-plan-flash': 'qwen-plan-3.8-flash',
+        'qwen-plan-3.8-flash': 'qwen-plan-3.8-flash',
         glm: 'glm-plan-5.3',
         'glm-5.3': 'glm-plan-5.3',
         'glm-5.2': 'glm-plan-5.2',
@@ -583,9 +626,16 @@ exports.DEFAULT_CONFIG = {
         'glm-plan': 'glm-plan-5.3',
         'glm-plan-5.3': 'glm-plan-5.3',
         'glm-plan-5.2': 'glm-plan-5.2',
+        'glm-flash': 'glm-plan-5.3-flash',
+        'glm-5.3-flash': 'glm-plan-5.3-flash',
+        'glm-plan-flash': 'glm-plan-5.3-flash',
+        'glm-plan-5.3-flash': 'glm-plan-5.3-flash',
         'glm-global': 'glm-global-5.3',
         'glm-global-5.3': 'glm-global-5.3',
         'glm-global-5.2': 'glm-global-5.2',
+        'glm-global-flash': 'glm-global-5.3-flash',
+        'glm-global-5.3-flash': 'glm-global-5.3-flash',
+        'zai-flash': 'glm-global-5.3-flash',
         zai: 'glm-global-5.3',
         'z-ai': 'glm-global-5.3',
         step: 'step-3.7-flash',
@@ -1278,6 +1328,14 @@ providers:
         model_id: qwen3.7-max
         max_tokens: 65536
         context_window: 1000000
+      # Qwen3.8 Flash：多模态（图/视频/文本输入）flash 档，1M 上下文、最大输出 128K。
+      # qwen3.8-flash-next 是其开源预览版权重，无任何托管 API，故不提供路由
+      3.8-flash:
+        model_key: qwen3.8-flash
+        display_name: "Qwen3.8 Flash"
+        model_id: qwen3.8-flash
+        max_tokens: 131072
+        context_window: 1000000
 
   # 千问 AI 平台 Token Plan 订阅（platform.qianwenai.com，sk-sp- 订阅 Key）
   # 专属接入点，非按量付费的 dashscope 端点（sk-sp- key 打过去会 403）
@@ -1300,6 +1358,14 @@ providers:
         display_name: "Qwen3.7 Max (Token Plan)"
         model_id: qwen3.7-max
         max_tokens: 65536
+        context_window: 1000000
+      # latest-model 文档称 Token Plan 积分覆盖 Qwen3.8-Flash（同一订阅接入点）；
+      # overview 页的档位模型表尚未列出（该表仍含已下线的 glm-5.1，判断为过期）。
+      # 若订阅档位不含该模型，上游会返回 403 AccessDenied.Unpurchased
+      3.8-flash:
+        display_name: "Qwen3.8 Flash (Token Plan)"
+        model_id: qwen3.8-flash
+        max_tokens: 131072
         context_window: 1000000
 
   # 智谱 GLM Coding Plan 订阅专属通道（bigmodel.cn/claude-code）。
@@ -1327,6 +1393,14 @@ providers:
         model_id: glm-5.2
         max_tokens: 131072
         context_window: 1000000
+      # GLM-5.3-Flash：GLM-5 系列首个原生多模态模型（视频/图片/文本/文件输入），
+      # 1M 上下文、最大输出 128K，文本参数与 GLM-5.3 一致（同样不可关闭思考）；
+      # Coding Plan 额度为 GLM-5.3 的 3 倍，同端点同 Key
+      5.3-flash:
+        display_name: "GLM-5.3-Flash (Coding Plan)"
+        model_id: glm-5.3-flash
+        max_tokens: 131072
+        context_window: 1000000
 
   glm-global:
     display_name: GLM Global
@@ -1345,6 +1419,11 @@ providers:
       5.2:
         display_name: "GLM-5.2 (Global)"
         model_id: glm-5.2
+        max_tokens: 131072
+        context_window: 1000000
+      5.3-flash:
+        display_name: "GLM-5.3-Flash (Global)"
+        model_id: glm-5.3-flash
         max_tokens: 131072
         context_window: 1000000
 
@@ -1557,6 +1636,10 @@ aliases:
   qwen-plan-max: qwen-plan-3.8-max
   qwen-plan-3.7: qwen-plan-3.7-max
   qwen-plan-3.7-max: qwen-plan-3.7-max
+  qwen-flash: qwen3.8-flash
+  qwen3.8-flash: qwen3.8-flash
+  qwen-plan-flash: qwen-plan-3.8-flash
+  qwen-plan-3.8-flash: qwen-plan-3.8-flash
   glm: glm-plan-5.3
   glm-5.3: glm-plan-5.3
   glm-5.2: glm-plan-5.2
@@ -1565,9 +1648,16 @@ aliases:
   glm-plan: glm-plan-5.3
   glm-plan-5.3: glm-plan-5.3
   glm-plan-5.2: glm-plan-5.2
+  glm-flash: glm-plan-5.3-flash
+  glm-5.3-flash: glm-plan-5.3-flash
+  glm-plan-flash: glm-plan-5.3-flash
+  glm-plan-5.3-flash: glm-plan-5.3-flash
   glm-global: glm-global-5.3
   glm-global-5.3: glm-global-5.3
   glm-global-5.2: glm-global-5.2
+  glm-global-flash: glm-global-5.3-flash
+  glm-global-5.3-flash: glm-global-5.3-flash
+  zai-flash: glm-global-5.3-flash
   zai: glm-global-5.3
   z-ai: glm-global-5.3
   step: step-3.7-flash
